@@ -1,0 +1,51 @@
+jobs:
+- name: cf-push-cuisine
+  plan:
+  - get: cuisine
+    trigger: true
+  - put: resource-deploy-cuisine
+    params:
+      manifest: cuisine/manifest.yml
+
+- name: cf-push-cookbook
+  plan:
+  - get: cookbook
+    trigger: true
+  - put: resource-deploy-cookbook
+    params:
+      manifest: cookbook/manifest.yml
+
+resources:
+  - name: cuisine
+    type: git
+    check_every: 2m
+    source:
+      uri: git@github.com:Event-Riddle/Cuisine.git
+      private_key: {{riddle-key}}
+      branch: master
+
+  - name: resource-deploy-cuisine
+    type: cf
+    source:
+      api: https://api.ng.bluemix.net
+      username: {{username}}
+      password: {{password}}
+      organization: skupnjak@de.ibm.com
+      space: SCM-Project
+
+  - name: cookbook
+    type: git
+    check_every: 2m
+    source:
+      uri: git@github.com:Event-Riddle/riddle-api.git
+      private_key: {{riddle-key}}
+      branch: master
+
+  - name: resource-deploy-cookbook
+    type: cf
+    source:
+      api: https://api.ng.bluemix.net
+      username: {{username}}
+      password: {{password}}
+      organization: skupnjak@de.ibm.com
+      space: SCM-Project
